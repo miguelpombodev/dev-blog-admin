@@ -52,7 +52,7 @@ export default function ClientLayout({
   return (
     <>
       <Sidebar />
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-pages-bg">
         <div className="p-8">{children}</div>
       </main>
     </>
