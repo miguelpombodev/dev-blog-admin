@@ -43,7 +43,7 @@ export default function ClientLayout({
 
   if (!userToken) {
     return (
-      <main className="flex flex-1 justify-center items-center overflow-y-auto h-screen">
+      <main className="flex flex-1 justify-center items-center overflow-y-auto h-screen  bg-neutral-900 text-white">
         <Home />
       </main>
     );
@@ -53,7 +53,6 @@ export default function ClientLayout({
     <>
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
-        <Header />
         <div className="p-8">{children}</div>
       </main>
     </>
