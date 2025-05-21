@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useLoginStore } from "@/store";
 import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
 import Home from "./page";
 
 export default function ClientLayout({
