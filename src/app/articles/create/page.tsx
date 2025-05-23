@@ -1,16 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import MarkdownPreview from "../../components/MarkdownPreview";
+import { Editor } from "@/components/blocks/editor-00/editor";
+import { SerializedEditorState } from "lexical";
+
+const initialValue = {
+  root: {
+    children: [
+      {
+        children: [
+          {
+            detail: 0,
+            format: 0,
+            mode: "normal",
+            style: "",
+            text: "Hello World 🚀",
+            type: "text",
+            version: 1,
+          },
+        ],
+        direction: "ltr",
+        format: "",
+        indent: 0,
+        type: "paragraph",
+        version: 1,
+      },
+    ],
+    direction: "ltr",
+    format: "",
+    indent: 0,
+    type: "root",
+    version: 1,
+  },
+} as unknown as SerializedEditorState;
 
 export default function CreateArticlePage() {
   const [title, setTitle] = useState("");
   const [briefDescription, setBriefDescription] = useState("");
   const [slug, setSlug] = useState("");
   const [imagePath, setImagePath] = useState("");
-  const [content, setContent] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentValue, setCurrentValue] = useState<string>("");
+
+  const [editorState, setEditorState] =
+    useState<SerializedEditorState>(initialValue);
 
   const availableTags = [
     "JavaScript",
@@ -67,14 +100,11 @@ export default function CreateArticlePage() {
         className="w-full p-3 mb-4 rounded  border border-neutral-700"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Markdown content"
-          className="h-96 p-4 rounded  border border-neutral-700"
+      <div className="flex">
+        <Editor
+          editorSerializedState={editorState}
+          onSerializedChange={(value) => setEditorState(value)}
         />
-        <MarkdownPreview content={content} />
       </div>
       <div className="flex items-center gap-10 mt-10">
         <select
