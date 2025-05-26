@@ -19,6 +19,7 @@ import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { FontColorToolbarPlugin } from "@/components/editor/plugins/toolbar/font-color-toolbar-plugin";
 import { FontBackgroundToolbarPlugin } from "@/components/editor/plugins/toolbar/font-background-toolbar-plugin";
 import { FormatCodeBlock } from "@/components/editor/plugins/toolbar/block-format/format-code-block";
+import { CodeLanguageToolbarPlugin } from "@/components/editor/plugins/toolbar/code-language-toolbar-plugin";
 
 export function Plugins() {
   const [floatingAnchorElem, setFloatingAnchorElem] =
@@ -44,11 +45,7 @@ export function Plugins() {
               <FormatQuote />
               <FormatCodeBlock />
             </BlockFormatDropDown>
-            {blockType === "code" ? (
-              <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
-            ) : (
-              <></>
-            )}
+            {blockType === "code" ? <CodeLanguageToolbarPlugin /> : <></>}
 
             <FontSizeToolbarPlugin />
             <ElementFormatToolbarPlugin />
