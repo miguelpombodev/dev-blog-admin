@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Editor } from "@/components/blocks/editor-00/editor";
 import {
   createArticleSchema,
@@ -12,12 +12,15 @@ import { createArticle } from "@/actions/createArticle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorState } from "lexical";
 import Modal from "@/app/components/Modal";
+import { ITag } from "@/interfaces/http/articles.interface";
+import { getTags } from "@/actions/article.actions";
 
 type FormData = z.infer<typeof createArticleSchema>;
 
 export default function CreateArticlePage() {
+  const [availableTags, setAvailableTags] = useState<ITag[]>([]);
   const [currentValue, setCurrentValue] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalSuccess, setModalSuccess] = useState(false);
@@ -34,19 +37,20 @@ export default function CreateArticlePage() {
     formState: { errors },
   } = form;
 
-  const availableTags = [
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Next.js",
-    "Node.js",
-  ];
+  useEffect(() => {
+    const getAllTags = async (): Promise<void> => {
+      const tags = await getTags();
+      setAvailableTags(tags);
+    };
+    getAllTags();
+  }, []);
 
   const handleAddTag = (value: string) => {
-    if (!value) return;
-    const newTags = selectedTags.includes(value)
-      ? selectedTags.filter((v) => v !== value)
-      : [...selectedTags, value];
+    const tag = availableTags.find((tag) => tag.name === value);
+    if (!tag) return;
+    const newTags = selectedTags.includes(tag)
+      ? selectedTags.filter((v) => v.name !== tag.name)
+      : [...selectedTags, tag];
 
     setSelectedTags(newTags);
     setValue("tags", newTags);
@@ -138,20 +142,27 @@ export default function CreateArticlePage() {
           >
             <option value="">Selecione uma tag</option>
             {availableTags.map((tag) => (
-              <option key={tag} value={tag}>
-                {tag}
+              <option key={tag.name} value={tag.name}>
+                {tag.name}
               </option>
             ))}
           </select>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 rounded-[10] bg-white flex-1 min-h-16 justify-center items-center">
             {selectedTags.length === 0 ? (
-              <p>Sem tags escolhidas</p>
+              <p className="text-center m-auto">Sem tags escolhidas</p>
             ) : (
               selectedTags.map((tag, idx) => (
-                <span key={idx} className="font-semibold border-b">
-                  {tag}
-                </span>
+                <div
+                  key={idx}
+                  className="flex font-semibold my-auto w-1/2 justify-between border-b border-black items-center p-2"
+                >
+                  <span>{tag.name}</span>
+                  <span
+                    style={{ backgroundColor: tag.color }}
+                    className="w-[80] h-[8] rounded-full"
+                  />
+                </div>
               ))
             )}
           </div>

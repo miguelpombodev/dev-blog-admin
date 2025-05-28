@@ -1,3 +1,4 @@
+import { ITag } from "@/interfaces/http/articles.interface";
 import { EditorState } from "lexical";
 import { z } from "zod";
 
@@ -14,7 +15,7 @@ const baseCreateArticleSchema = z.object({
       message: "Content must have at least 10 characters",
     }),
   tags: z
-    .array(z.string().min(3, "A tag must have at least 3 characters"))
+    .array(z.custom<ITag>())
     .min(1, "Tags list must have at least 1 tag written"),
 });
 
