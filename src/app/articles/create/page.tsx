@@ -11,12 +11,16 @@ import { useForm } from "react-hook-form";
 import { createArticle } from "@/actions/createArticle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorState } from "lexical";
+import Modal from "@/app/components/Modal";
 
 type FormData = z.infer<typeof createArticleSchema>;
 
 export default function CreateArticlePage() {
   const [currentValue, setCurrentValue] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalSuccess, setModalSuccess] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(createArticleSchema),
@@ -26,6 +30,7 @@ export default function CreateArticlePage() {
     handleSubmit,
     register,
     setValue,
+    reset,
     formState: { errors },
   } = form;
 
@@ -62,12 +67,16 @@ export default function CreateArticlePage() {
       }
 
       await createArticle(safeParsedData.data);
+      setModalMessage("Article created successfully!");
+      setModalSuccess(true);
+      reset();
     } catch (error) {
       if (error instanceof Error) {
-        throw error;
+        setModalMessage("An error occurred while creating the article.");
+        setModalSuccess(false);
       }
-
-      throw error;
+    } finally {
+      setModalOpen(true);
     }
   }
 
@@ -155,6 +164,12 @@ export default function CreateArticlePage() {
           Publish
         </button>
       </form>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        isSuccess={modalSuccess}
+        message={modalMessage}
+      />
     </div>
   );
 }
