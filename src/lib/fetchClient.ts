@@ -69,6 +69,8 @@ export default class FetchApiClient {
       ...options,
     });
 
+    console.log(res);
+
     if (!res.ok) {
       throw new Error(`Failed to fetch: ${res.status}`);
     }

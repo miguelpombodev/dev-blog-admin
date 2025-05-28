@@ -1,3 +1,4 @@
+import { EditorState } from "lexical";
 import { z } from "zod";
 
 const baseCreateArticleSchema = z.object({
@@ -7,9 +8,11 @@ const baseCreateArticleSchema = z.object({
     .min(3, "Brief Description mus have at least 3 characters"),
   slug: z.string().min(3, "Slug must have at least 3 characters").toLowerCase(),
 
-  content: z.string().refine((val) => JSON.stringify(val).length > 10, {
-    message: "Content must have at least 10 characters",
-  }),
+  content: z
+    .custom<EditorState>()
+    .refine((val) => JSON.stringify(val).length > 10, {
+      message: "Content must have at least 10 characters",
+    }),
   tags: z
     .array(z.string().min(3, "A tag must have at least 3 characters"))
     .min(1, "Tags list must have at least 1 tag written"),

@@ -27,7 +27,7 @@ const editorConfig: InitialConfigType = {
 function EditorChangeHandler({
   onChange,
 }: {
-  onChange?: (html: string) => void;
+  onChange?: (html: EditorState) => void;
 }) {
   const [editor] = useLexicalComposerContext();
 
@@ -36,7 +36,7 @@ function EditorChangeHandler({
       onChange={() => {
         editor.update(() => {
           const htmlString = $generateHtmlFromNodes(editor);
-          onChange?.(htmlString); // ✅ envia HTML como string
+          onChange?.(htmlString as unknown as EditorState);
         });
       }}
     />
@@ -48,7 +48,7 @@ export function Editor({
   onChange,
 }: {
   editorState?: EditorState;
-  onChange?: (html: string) => void;
+  onChange?: (html: EditorState) => void;
 }) {
   return (
     <div className="overflow-hidden rounded-lg border bg-background shadow flex flex-1">

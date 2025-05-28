@@ -10,6 +10,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { createArticle } from "@/actions/createArticle";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EditorState } from "lexical";
 
 type FormData = z.infer<typeof createArticleSchema>;
 
@@ -112,7 +113,7 @@ export default function CreateArticlePage() {
         <div className="mt-6">
           <Editor
             onChange={(html) =>
-              setValue("content", html, { shouldValidate: true })
+              setValue("content", html as EditorState, { shouldValidate: true })
             }
           />
           {errors.content && (
