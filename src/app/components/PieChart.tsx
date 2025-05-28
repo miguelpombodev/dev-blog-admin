@@ -11,7 +11,13 @@ import {
 
 import { Label, Pie, PieChart as Chart } from "recharts";
 
-export default function PieChart<T>({ data, totalCount }: IPieChartProps<T>) {
+export default function PieChart<T>({
+  data,
+  totalCount,
+  dataKey,
+  nameKey,
+  title,
+}: IPieChartProps<T>) {
   const chartConfig = {
     visitors: {
       label: "Visitors",
@@ -44,8 +50,8 @@ export default function PieChart<T>({ data, totalCount }: IPieChartProps<T>) {
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <Pie
           data={data}
-          dataKey="visitors"
-          nameKey="browser"
+          dataKey={dataKey}
+          nameKey={nameKey}
           innerRadius={60}
           strokeWidth={5}
         >
@@ -71,7 +77,7 @@ export default function PieChart<T>({ data, totalCount }: IPieChartProps<T>) {
                       y={(viewBox.cy || 0) + 24}
                       className="fill-muted-foreground"
                     >
-                      Visitors
+                      {title}
                     </tspan>
                   </text>
                 );

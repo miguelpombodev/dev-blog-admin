@@ -5,11 +5,11 @@ import PieChart from "@/app/components/PieChart";
 
 export default function ManagerPage() {
   const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chart-1)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-chart-2)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-chart-3)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-chart-4)" },
-    { browser: "other", visitors: 190, fill: "var(--color-chart-5)" },
+    { browser: "chrome", visitors: 275, fill: "#000" },
+    { browser: "safari", visitors: 200, fill: "#bf2727" },
+    { browser: "firefox", visitors: 287, fill: "#63bf27" },
+    { browser: "edge", visitors: 173, fill: "#27bf98" },
+    { browser: "other", visitors: 190, fill: "#2750bf" },
   ];
   const totalVisitors = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
@@ -27,13 +27,25 @@ export default function ManagerPage() {
         <div className="flex flex-col justify-center items-center">
           <p className="text-2xl font-bold">Grafico 1</p>
           <span className="flex justify-center h-80 w-80">
-            <PieChart data={chartData} totalCount={totalVisitors} />
+            <PieChart
+              title="Visitors"
+              nameKey="browser"
+              dataKey="visitors"
+              data={chartData}
+              totalCount={totalVisitors}
+            />
           </span>
         </div>
         <div className="flex flex-col justify-center items-center">
           <p className="text-2xl font-bold">Grafico 2</p>
           <span className="flex justify-center h-80 w-80">
-            <PieChart data={chartData} totalCount={totalVisitors} />
+            <PieChart
+              title="Visitors"
+              nameKey="browser"
+              dataKey="visitors"
+              data={chartData}
+              totalCount={totalVisitors}
+            />
           </span>
         </div>
       </div>
