@@ -43,19 +43,23 @@ export default function ManagerPage() {
           </div>
         ) : (
           <>
-            <span className="flex bg-white rounded-[10] gap-4 justify-center self-center items-center w-4/12 h-10 shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
-              <span className="flex gap-1">
-                <p>API Status: </p>
-                <span className="font-bold">{health.status.toUpperCase()}</span>
+            {!isPending && health.status && (
+              <span className="flex bg-white rounded-[10] gap-4 justify-center self-center items-center w-4/12 h-10 shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
+                <span className="flex gap-1">
+                  <p>API Status: </p>
+                  <span className="font-bold">
+                    {health.status.toUpperCase()}
+                  </span>
+                </span>
+                <span
+                  style={{
+                    backgroundColor:
+                      health.status === "ok" ? "#33e346" : "#f91e1e",
+                  }}
+                  className="w-[30px] h-[30px] rounded-full"
+                />
               </span>
-              <span
-                style={{
-                  backgroundColor:
-                    health.status === "ok" ? "#33e346" : "#f91e1e",
-                }}
-                className="w-[30] h-[30] rounded-full"
-              />
-            </span>
+            )}
             <div className="w-full flex justify-center items-center gap-10">
               {infos.map((info, idx) => (
                 <InfoSquare
