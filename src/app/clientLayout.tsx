@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLoginStore } from "@/store";
 import Sidebar from "./components/Sidebar";
 import Home from "./page";
+import Spinner from "./components/Spinner";
 
 export default function ClientLayout({
   children,
@@ -34,9 +35,9 @@ export default function ClientLayout({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        Carregando...
-      </div>
+      <main className="flex flex-1 justify-center items-center overflow-y-auto h-screen  bg-neutral-900 text-white">
+        <Spinner />
+      </main>
     );
   }
 
