@@ -28,7 +28,7 @@ export default function CreateTagPage() {
   async function formOnSubmit(data: createTagSchemaFormData) {
     try {
       await createTag(data);
-      setModalMessage("Article created successfully!");
+      setModalMessage("Tag created successfully!");
       setModalSuccess(true);
       reset();
     } catch (error) {
