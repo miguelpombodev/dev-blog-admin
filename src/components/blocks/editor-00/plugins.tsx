@@ -20,6 +20,9 @@ import { FontColorToolbarPlugin } from "@/components/editor/plugins/toolbar/font
 import { FontBackgroundToolbarPlugin } from "@/components/editor/plugins/toolbar/font-background-toolbar-plugin";
 import { FormatCodeBlock } from "@/components/editor/plugins/toolbar/block-format/format-code-block";
 import { CodeLanguageToolbarPlugin } from "@/components/editor/plugins/toolbar/code-language-toolbar-plugin";
+import { InsertImage } from "@/components/editor/plugins/toolbar/block-insert/insert-image";
+import { ImagesPlugin } from "@/components/editor/plugins/images-plugin";
+import { BlockInsertPlugin } from "@/components/editor/plugins/toolbar/block-insert-plugin";
 
 export function Plugins() {
   const [floatingAnchorElem, setFloatingAnchorElem] =
@@ -46,7 +49,9 @@ export function Plugins() {
               <FormatCodeBlock />
             </BlockFormatDropDown>
             {blockType === "code" ? <CodeLanguageToolbarPlugin /> : <></>}
-
+            <BlockInsertPlugin>
+              <InsertImage />
+            </BlockInsertPlugin>
             <FontSizeToolbarPlugin />
             <ElementFormatToolbarPlugin />
             <FontColorToolbarPlugin />
@@ -69,6 +74,7 @@ export function Plugins() {
         <CodeHighlightPlugin />
         <CheckListPlugin />
         <TabIndentationPlugin />
+        <ImagesPlugin />
         {/* editor plugins */}
       </div>
       {/* actions plugins */}
