@@ -49,6 +49,9 @@ export default function CreateTagPage() {
       setModalMessage("Tag created successfully!");
       setModalSuccess(true);
       reset();
+
+      const updatedTags = await getTags();
+      setAvailableTags(updatedTags);
     } catch (error) {
       if (error instanceof Error) {
         setModalMessage("An error occurred while creating the article.");
