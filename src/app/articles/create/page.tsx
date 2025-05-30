@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Editor } from "@/components/blocks/editor-00/editor";
 import { createArticleSchema } from "@/schemas/article.schema";
@@ -42,15 +43,23 @@ export default function CreateArticlePage() {
     getAllTags();
   }, []);
 
+  const handleRemoveSelectedTag = (value: string) => {
+    const newSelectTags = selectedTags.filter((tag) => tag.name !== value);
+
+    setSelectedTags([...newSelectTags]);
+    setValue("tags", [...newSelectTags]);
+    setCurrentValue("");
+  };
+
   const handleAddTag = (value: string) => {
     const tag = availableTags.find((tag) => tag.name === value);
     if (!tag) return;
-    const newTags = selectedTags.includes(tag)
-      ? selectedTags.filter((v) => v.name !== tag.name)
-      : [...selectedTags, tag];
+    const tagExists = selectedTags.includes(tag);
 
-    setSelectedTags(newTags);
-    setValue("tags", newTags);
+    if (tagExists) return;
+
+    setSelectedTags([...selectedTags, tag]);
+    setValue("tags", [...selectedTags, tag]);
     setCurrentValue("");
   };
 
@@ -130,7 +139,7 @@ export default function CreateArticlePage() {
         <div className="flex items-center gap-10 mt-10">
           <select
             value={currentValue}
-            className="border px-3 py-2 rounded"
+            className="border flex-1 px-3 py-2 rounded"
             onChange={(e) => handleAddTag(e.target.value)}
           >
             <option value="">Selecione uma tag</option>
@@ -141,20 +150,26 @@ export default function CreateArticlePage() {
             ))}
           </select>
 
-          <div className="flex flex-col gap-2 rounded-[10] bg-white flex-1 min-h-16 justify-center items-center">
+          <div className="flex flex-3 flex-col gap-2 rounded-[10] bg-white min-h-16 justify-center items-center">
             {selectedTags.length === 0 ? (
               <p className="text-center m-auto">Sem tags escolhidas</p>
             ) : (
               selectedTags.map((tag, idx) => (
                 <div
                   key={idx}
-                  className="flex font-semibold my-auto w-1/2 justify-between border-b border-black items-center p-2"
+                  className="flex font-semibold my-auto w-1/2 justify-between  items-center p-2"
                 >
                   <span>{tag.name}</span>
                   <span
                     style={{ backgroundColor: tag.color }}
                     className="w-[80] h-[8] rounded-full"
                   />
+                  <span
+                    className=" rounded-[5] bg-red-500 cursor-pointer"
+                    onClick={() => handleRemoveSelectedTag(tag.name)}
+                  >
+                    <X width={25} height={25} className="text-white" />
+                  </span>
                 </div>
               ))
             )}
