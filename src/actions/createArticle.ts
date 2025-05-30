@@ -1,18 +1,40 @@
 "use server";
 
 import FetchApiClient from "@/lib/fetchClient";
-import { createArticleSchemaForApi } from "@/schemas/article.schema";
+import { createArticleSchema } from "@/schemas/article.schema";
 import { z } from "zod";
 
-type FormData = z.infer<typeof createArticleSchemaForApi>;
+type CreateArticleFormData = z.infer<typeof createArticleSchema>;
 
-export async function createArticle(data: FormData): Promise<string> {
+function buildFormData(file: File): FormData {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return formData;
+}
+
+export async function createArticle(
+  data: CreateArticleFormData,
+  file: File
+): Promise<{ postResponse: string; putResponse: string }> {
+  const { briefDescription, content, slug, tags, title } = data;
   const fetch = new FetchApiClient();
-  const json = JSON.stringify(data);
+  const json = JSON.stringify({ briefDescription, content, slug, tags, title });
 
-  const response = await fetch.Post<string>("devblog", "admin/create", {
+  const postResponse = await fetch.Post<string>("devblog", "admin/create", {
     body: json,
   });
 
-  return response;
+  const putResponse = await fetch.Put<string>(
+    "devblog",
+    `admin/article/avatar/${slug}`,
+    {
+      body: buildFormData(file),
+    }
+  );
+
+  return {
+    postResponse,
+    putResponse,
+  };
 }

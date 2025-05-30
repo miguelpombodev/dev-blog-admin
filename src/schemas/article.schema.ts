@@ -2,7 +2,7 @@ import { ITag } from "@/interfaces/http/articles.interface";
 import { EditorState } from "lexical";
 import { z } from "zod";
 
-const baseCreateArticleSchema = z.object({
+export const baseCreateArticleSchema = z.object({
   title: z.string().min(3, "Title must have at least 3 characters"),
   briefDescription: z
     .string()
@@ -27,5 +27,5 @@ export const createArticleSchema = baseCreateArticleSchema.extend({
 });
 
 export const createArticleSchemaForApi = baseCreateArticleSchema.extend({
-  articleImageSrc: z.string(),
+  articleImage: z.instanceof(File, { message: "Required file" }),
 });

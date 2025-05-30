@@ -2,10 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Editor } from "@/components/blocks/editor-00/editor";
-import {
-  createArticleSchema,
-  createArticleSchemaForApi,
-} from "@/schemas/article.schema";
+import { createArticleSchema } from "@/schemas/article.schema";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { createArticle } from "@/actions/createArticle";
@@ -59,18 +56,14 @@ export default function CreateArticlePage() {
 
   async function componentOnSubmit(data: FormData) {
     try {
-      const fileName = data.articleImageSrc.item(0)?.name;
-      const safeParsedData = createArticleSchemaForApi.safeParse({
-        ...data,
-        articleImageSrc: fileName,
-      });
+      const file = data.articleImageSrc.item(0);
 
-      if (!safeParsedData.success) {
-        console.error(safeParsedData.error);
+      if (!file) {
+        console.error("There's something wrong with article file");
         return;
       }
 
-      await createArticle(safeParsedData.data);
+      await createArticle(data, file);
       setModalMessage("Article created successfully!");
       setModalSuccess(true);
       reset();
