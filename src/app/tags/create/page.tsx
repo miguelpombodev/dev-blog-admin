@@ -73,13 +73,31 @@ export default function CreateTagPage() {
           {errors.title && (
             <p className="text-red-600">{errors.title.message}</p>
           )}
-          <HexColorPicker
-            color={tagColor}
-            onChange={(e) => {
-              setTagColor(e);
-              setValue("color", e, { shouldValidate: true });
-            }}
-          />
+          <span>
+            <HexColorPicker
+              color={tagColor}
+              onChange={(e) => {
+                setTagColor(e);
+                setValue("color", e, { shouldValidate: true });
+              }}
+            />
+            <input
+              type="text"
+              value={tagColor}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^#?[0-9A-Fa-f]{0,6}$/.test(value)) {
+                  setTagColor(value.startsWith("#") ? value : `#${value}`);
+                  setValue(
+                    "color",
+                    value.startsWith("#") ? value : `#${value}`,
+                    { shouldValidate: true }
+                  );
+                }
+              }}
+              className="border px-2 py-1 rounded mt-2"
+            />
+          </span>
           {errors.title && (
             <p className="text-red-600">{errors.title.message}</p>
           )}
