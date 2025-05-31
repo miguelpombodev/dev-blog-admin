@@ -1,32 +1,35 @@
-"use client";
-
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import React from "react";
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  isSuccess: boolean;
+  message?: string;
   children?: React.ReactNode;
 };
 
-export default function Modal({
+export default function ResultModalComponent({
   isOpen,
   onClose,
-  title,
-  children,
+  isSuccess,
+  message,
 }: ModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {children}
+          <DialogTitle
+            className={isSuccess ? "text-green-600" : "text-red-600"}
+          >
+            {isSuccess ? "Success" : "Error"}
+          </DialogTitle>
+          <DialogDescription>{message}</DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>

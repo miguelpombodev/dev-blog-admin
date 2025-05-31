@@ -9,9 +9,9 @@ import { useForm } from "react-hook-form";
 import { createArticle } from "@/actions/createArticle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditorState } from "lexical";
-import Modal from "@/app/components/Modal";
 import { ITag } from "@/interfaces/http/articles.interface";
 import { getTags } from "@/actions/article.actions";
+import ResultModalComponent from "@/app/components/ResultModal";
 
 type FormData = z.infer<typeof createArticleSchema>;
 
@@ -183,7 +183,7 @@ export default function CreateArticlePage() {
           Publish
         </button>
       </form>
-      <Modal
+      <ResultModalComponent
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         isSuccess={modalSuccess}

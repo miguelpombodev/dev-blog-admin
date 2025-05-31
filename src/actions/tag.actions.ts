@@ -13,3 +13,14 @@ export async function createTag(formData: createTagSchemaFormData) {
 
   return response;
 }
+
+export async function deleteTag(title: string) {
+  const fetch = new FetchApiClient();
+
+  const response = await fetch.Delete<string>(
+    "devblog",
+    `admin/delete/tag/${title.trim()}`
+  );
+
+  return response;
+}

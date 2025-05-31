@@ -117,4 +117,38 @@ export default class FetchApiClient {
 
     return json;
   }
+
+  public async Delete<T>(
+    flag: keyof UrlsMapType,
+    url: string,
+    options?: RequestInit
+  ): Promise<T> {
+    const baseUrl = this.getUrl(flag);
+
+    const cookie = (await cookies()).get("loginCredentials");
+
+    const headers: HeadersInit = {
+      Cookie: `loginCredentials=${cookie?.value}`,
+    };
+
+    console.log(`${baseUrl}/${url}`);
+
+    const res = await fetch(`${baseUrl}/${url}`, {
+      cache: "no-store",
+      headers,
+      credentials: "include",
+      method: "DELETE",
+      ...options,
+    });
+
+    console.log(res);
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch: ${res.status}`);
+    }
+
+    const json: T = await res.json();
+
+    return json;
+  }
 }
