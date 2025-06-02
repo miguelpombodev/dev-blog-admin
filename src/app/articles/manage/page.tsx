@@ -4,13 +4,13 @@ import { useState, useEffect, useTransition } from "react";
 import { infos } from "@/app/api/mocks/home.mock";
 import InfoSquare from "@/app/components/InfoSquare";
 import PieChart from "@/app/components/PieChart";
-import { getAdminInformations, getHealthCheck } from "@/actions/admin.actions";
 import {
   IAdminArticlesInformations,
   IHealthCheck,
 } from "@/interfaces/http/admin.interface";
-import Modal from "@/app/components/Modal";
 import Spinner from "@/app/components/Spinner";
+import ResultModalComponent from "@/app/components/ResultModal";
+import { getAdminInformations, getHealthCheck } from "@/actions/admin.actions";
 
 export default function ManagerPage() {
   const [articleInformations, setArticleInformations] =
@@ -26,6 +26,7 @@ export default function ManagerPage() {
       try {
         const result = await getAdminInformations();
         const healthCheck = await getHealthCheck();
+
         setArticleInformations(result);
         setHealth(healthCheck);
       } catch {
@@ -87,7 +88,7 @@ export default function ManagerPage() {
         )}
       </section>
 
-      <Modal
+      <ResultModalComponent
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         isSuccess={false}

@@ -4,8 +4,9 @@ import { EllipsisVertical } from "lucide-react";
 import { ITagCardProps } from "@/interfaces/components/tagCard.interface";
 import { useEffect, useRef, useState } from "react";
 import Modal from "./Modal";
-import { deleteTag } from "@/actions/tag.actions";
 import ResultModalComponent from "./ResultModal";
+import { TagFormComponent } from "./TagForm";
+import { deleteTag } from "@/actions/tag.actions";
 
 export default function TagComponent({ tag, onDeleted }: ITagCardProps) {
   const [openTagOptions, setOpenTagOptions] = useState(false);
@@ -13,7 +14,7 @@ export default function TagComponent({ tag, onDeleted }: ITagCardProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [resultModalOpen, setResultModalOpen] = useState(false);
-  const [resultModalMessage, setresultModalMessage] = useState("");
+  const [resultModalMessage, setResultModalMessage] = useState("");
   const [resultModalSuccess, setResultModalSuccess] = useState(false);
 
   useEffect(() => {
@@ -36,7 +37,8 @@ export default function TagComponent({ tag, onDeleted }: ITagCardProps) {
   async function handleDeleteTag(tagName: string) {
     try {
       await deleteTag(tagName);
-      setresultModalMessage("Tag deleted successfully!");
+
+      setResultModalMessage("Tag deleted successfully!");
       setResultModalSuccess(true);
       setResultModalOpen(true);
 
@@ -44,7 +46,7 @@ export default function TagComponent({ tag, onDeleted }: ITagCardProps) {
         onDeleted();
       }
     } catch {
-      setresultModalMessage("An error occurred while deleting the tag.");
+      setResultModalMessage("An error occurred while deleting the tag.");
       setResultModalSuccess(false);
       setResultModalOpen(true);
     }
@@ -89,7 +91,7 @@ export default function TagComponent({ tag, onDeleted }: ITagCardProps) {
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
       >
-        <p>edit</p>
+        <TagFormComponent editMode tagTitle={tag.name} />
       </Modal>
       <Modal
         title="Delete Tag - Teste"

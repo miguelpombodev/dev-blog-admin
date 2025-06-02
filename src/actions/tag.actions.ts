@@ -7,7 +7,7 @@ export async function createTag(formData: createTagSchemaFormData) {
   const fetch = new FetchApiClient();
   const json = JSON.stringify(formData);
 
-  const response = await fetch.Post<string>("devblog", "admin/create/tag", {
+  const response = await fetch.Post<string>("devblog", "tags", {
     body: json,
   });
 
@@ -19,8 +19,19 @@ export async function deleteTag(title: string) {
 
   const response = await fetch.Delete<string>(
     "devblog",
-    `admin/delete/tag/${title.trim()}`
+    `tags/${title.trim()}`
   );
+
+  return response;
+}
+
+export async function updateTag(formData: createTagSchemaFormData) {
+  const fetch = new FetchApiClient();
+  const json = JSON.stringify(formData);
+
+  const response = await fetch.Put<string>("devblog", "tags", {
+    body: json,
+  });
 
   return response;
 }

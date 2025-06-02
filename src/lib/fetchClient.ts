@@ -30,6 +30,7 @@ export default class FetchApiClient {
     options?: RequestInit
   ): Promise<T> {
     const baseUrl = this.getUrl(flag);
+    console.log(`${baseUrl}/${url}`);
     const res = await fetch(`${baseUrl}/${url}`, {
       cache: "no-store",
       headers: {
@@ -89,6 +90,11 @@ export default class FetchApiClient {
 
     const cookie = (await cookies()).get("loginCredentials");
 
+    console.log("REQUEST INFO --- ", {
+      url: `${baseUrl}/${url}`,
+      options: options?.body,
+    });
+
     const headers: HeadersInit = {
       Cookie: `loginCredentials=${cookie?.value}`,
     };
@@ -96,8 +102,6 @@ export default class FetchApiClient {
     if (!(options?.body instanceof FormData)) {
       headers["Content-Type"] = "application/json";
     }
-
-    console.log(options?.body);
 
     const res = await fetch(`${baseUrl}/${url}`, {
       cache: "no-store",
