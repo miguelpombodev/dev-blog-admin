@@ -50,46 +50,71 @@ export default function ManagerPage() {
 
   return (
     <>
+      {isPending && <Spinner />}
       <section className="flex flex-col gap-10">
-        {isPending ? (
-          <Spinner />
+        {isPending || !health.status ? (
+          <span className="flex bg-white rounded-[10] gap-4 justify-center self-center items-center w-4/12 h-10 shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)] filter blur-sm transition-all">
+            <span className="flex gap-1">
+              <p>API Status: </p>
+              <span className="font-bold">teste</span>
+            </span>
+            <span
+              style={{
+                backgroundColor: "#f91e1e",
+              }}
+              className="w-[30px] h-[30px] rounded-full"
+            />
+          </span>
         ) : (
-          <>
-            {!isPending && health.status && (
-              <span className="flex bg-white rounded-[10] gap-4 justify-center self-center items-center w-4/12 h-10 shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
-                <span className="flex gap-1">
-                  <p>API Status: </p>
-                  <span className="font-bold">
-                    {health.status.toUpperCase()}
-                  </span>
-                </span>
-                <span
-                  style={{
-                    backgroundColor:
-                      health.status === "ok" ? "#33e346" : "#f91e1e",
-                  }}
-                  className="w-[30px] h-[30px] rounded-full"
-                />
-              </span>
-            )}
-            <div className="w-full flex justify-center items-center gap-10">
-              {infos.map((info, idx) => (
+          <span className="flex bg-white rounded-[10] gap-4 justify-center self-center items-center w-4/12 h-10 shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
+            <span className="flex gap-1">
+              <p>API Status: </p>
+              <span className="font-bold">{health.status?.toUpperCase()}</span>
+            </span>
+            <span
+              style={{
+                backgroundColor:
+                  health?.status === "ok" ? "#33e346" : "#f91e1e",
+              }}
+              className="w-[30px] h-[30px] rounded-full"
+            />
+          </span>
+        )}
+        {isPending ||
+        !articleInformations ||
+        !articleInformations.getArticlesAndTagsInformations ? (
+          <div className="w-full flex justify-center items-center gap-10 filter blur-sm transition-all">
+            {infos.map((info, idx) => (
+              <InfoSquare key={idx} title={info.title} content={info.content} />
+            ))}
+          </div>
+        ) : (
+          <div className="w-full flex justify-center items-center gap-10">
+            {articleInformations.getArticlesAndTagsInformations.map(
+              (info, idx) => (
                 <InfoSquare
                   key={idx}
                   title={info.title}
-                  content={info.content}
+                  content={info.count.toString()}
                 />
-              ))}
-            </div>
-
-            <div className="flex items-center justify-center rounded-[10] py-10 bg-white shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
-              <div className="flex flex-col justify-center items-center">
-                <p className="text-2xl font-bold">Grafico 1</p>
-                <span
-                  className={`flex justify-center h-80 w-80 ${
-                    articleInformations.articlesCategoriesCount && "relative"
-                  }`}
-                >
+              )
+            )}
+          </div>
+        )}
+        <div className="flex items-center justify-center rounded-[10] py-10 bg-white shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
+          <div className="flex flex-col justify-center items-center">
+            <p className="text-2xl font-bold">Articles Category Count</p>
+            <span
+              className={`flex justify-center ${
+                isPending && "items-center"
+              } h-80 w-80 ${
+                articleInformations.articlesCategoriesCount && "relative"
+              }`}
+            >
+              {isPending ? (
+                <Spinner />
+              ) : (
+                <>
                   {articleInformations.articlesCategoriesCount && (
                     <span className="flex justify-center items-center w-[60%] h-[16%] bg-white z-1 rounded-[10] absolute top-[42%]">
                       No items to be displayed
@@ -114,12 +139,21 @@ export default function ManagerPage() {
                       isBlurred={true}
                     />
                   )}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-5">
-              <h1 className="text-3xl font-bold mb-6">Availables Articles</h1>
+                </>
+              )}
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-5 ">
+          <h1 className="text-3xl font-bold mb-6">Availables Articles</h1>
+          {isPending || !articles ? (
+            <span>
+              <Card className="filter blur-sm transition-all">
+                <CardContent>No cards to be shown</CardContent>
+              </Card>
+            </span>
+          ) : (
+            <span>
               {!articles.length && (
                 <Card>
                   <CardContent>No cards to be shown</CardContent>
@@ -129,9 +163,9 @@ export default function ManagerPage() {
               {articles.map((article) => (
                 <ArticleCardComponent key={article._id} article={article} />
               ))}
-            </div>
-          </>
-        )}
+            </span>
+          )}
+        </div>
       </section>
 
       <ResultModalComponent
