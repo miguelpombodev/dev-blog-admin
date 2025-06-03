@@ -11,13 +11,18 @@ import {
 
 import { Label, Pie, PieChart as Chart } from "recharts";
 
+type Props<T> = IPieChartProps<T> & {
+  isBlurred?: boolean;
+};
+
 export default function PieChart<T>({
   data,
   totalCount,
   dataKey,
   nameKey,
   title,
-}: IPieChartProps<T>) {
+  isBlurred = false,
+}: Props<T>) {
   const chartConfig = {
     visitors: {
       label: "Visitors",
@@ -45,9 +50,14 @@ export default function PieChart<T>({
   } satisfies ChartConfig;
 
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer
+      className={isBlurred ? "filter blur-sm transition-all" : "transition-all"}
+      config={chartConfig}
+    >
       <Chart>
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        {!isBlurred && (
+          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        )}
         <Pie
           data={data}
           dataKey={dataKey}

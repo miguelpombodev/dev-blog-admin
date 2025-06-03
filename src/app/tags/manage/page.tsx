@@ -62,7 +62,7 @@ export default function CreateTagPage() {
       ) : (
         <div className="flex min-h-[100] flex-col gap-5 bg-white rounded-[10] p-8 shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
           <h1 className="text-3xl font-bold mb-6">Available Tags</h1>
-          {!availableTags ? (
+          {!availableTags.length ? (
             <h3>There are no tags available or registered</h3>
           ) : (
             availableTags.map((tag) => (

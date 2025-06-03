@@ -21,7 +21,7 @@ export default function Sidebar() {
         </LargeButton>
         <LargeButton>
           <Tag width={20} height={20} />
-          <Link href="/tags/create" className="w-full">
+          <Link href="/tags/manage" className="w-full">
             Manage Tags
           </Link>
         </LargeButton>

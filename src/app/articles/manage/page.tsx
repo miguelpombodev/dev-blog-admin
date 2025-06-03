@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { infos } from "@/app/api/mocks/home.mock";
+import { chartData, infos } from "@/app/api/mocks/home.mock";
 import InfoSquare from "@/app/components/InfoSquare";
 import PieChart from "@/app/components/PieChart";
 import {
@@ -10,9 +10,17 @@ import {
 } from "@/interfaces/http/admin.interface";
 import Spinner from "@/app/components/Spinner";
 import ResultModalComponent from "@/app/components/ResultModal";
-import { getAdminInformations, getHealthCheck } from "@/actions/admin.actions";
+import {
+  getAdminInformations,
+  getAllArticle,
+  getHealthCheck,
+} from "@/actions/admin.actions";
+import ArticleCardComponent from "@/app/components/ArticleCard";
+import { IArticle } from "@/interfaces/http/articles.interface";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function ManagerPage() {
+  const [articles, setArticles] = useState<IArticle[]>([]);
   const [articleInformations, setArticleInformations] =
     useState<IAdminArticlesInformations>({} as IAdminArticlesInformations);
   const [health, setHealth] = useState<IHealthCheck>({} as IHealthCheck);
@@ -24,11 +32,15 @@ export default function ManagerPage() {
   useEffect(() => {
     startTransition(async () => {
       try {
-        const result = await getAdminInformations();
-        const healthCheck = await getHealthCheck();
+        const [result, healthCheck, articlesResult] = await Promise.all([
+          getAdminInformations(),
+          getHealthCheck(),
+          getAllArticle(),
+        ]);
 
         setArticleInformations(result);
         setHealth(healthCheck);
+        setArticles(articlesResult);
       } catch {
         setError("Erro ao carregar informações do painel.");
         setShowModal(true);
@@ -73,16 +85,50 @@ export default function ManagerPage() {
             <div className="flex items-center justify-center rounded-[10] py-10 bg-white shadow-[6px_7px_6px_0px_rgba(0,_0,_0,_0.1)]">
               <div className="flex flex-col justify-center items-center">
                 <p className="text-2xl font-bold">Grafico 1</p>
-                <span className="flex justify-center h-80 w-80">
-                  <PieChart
-                    title="Articles"
-                    nameKey="name"
-                    dataKey="count"
-                    data={articleInformations.articlesCategoriesCount}
-                    totalCount={articleInformations.count}
-                  />
+                <span
+                  className={`flex justify-center h-80 w-80 ${
+                    articleInformations.articlesCategoriesCount && "relative"
+                  }`}
+                >
+                  {articleInformations.articlesCategoriesCount && (
+                    <span className="flex justify-center items-center w-[60%] h-[16%] bg-white z-1 rounded-[10] absolute top-[42%]">
+                      No items to be displayed
+                    </span>
+                  )}
+                  {!articleInformations.articlesCategoriesCount ? (
+                    <PieChart
+                      title="Articles"
+                      nameKey="name"
+                      dataKey="count"
+                      data={articleInformations.articlesCategoriesCount}
+                      totalCount={articleInformations.count}
+                      isBlurred={false}
+                    />
+                  ) : (
+                    <PieChart
+                      title="Articles"
+                      nameKey="browser"
+                      dataKey="visitors"
+                      data={chartData}
+                      totalCount={0}
+                      isBlurred={true}
+                    />
+                  )}
                 </span>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              <h1 className="text-3xl font-bold mb-6">Availables Articles</h1>
+              {!articles.length && (
+                <Card>
+                  <CardContent>No cards to be shown</CardContent>
+                </Card>
+              )}
+
+              {articles.map((article) => (
+                <ArticleCardComponent key={article._id} article={article} />
+              ))}
             </div>
           </>
         )}
