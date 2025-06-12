@@ -19,6 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import { nodes } from "@/components/blocks/editor-00/nodes";
 import debounce from "lodash.debounce";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof createArticleSchema>;
 
@@ -31,6 +32,8 @@ export default function ArticleFormComponent({
   editMode = false,
   articleId,
 }: Props) {
+  const router = useRouter();
+
   const [availableTags, setAvailableTags] = useState<ITag[]>([]);
   const [oldArticle, setOldArticle] = useState<IArticle>();
   const [currentValue, setCurrentValue] = useState("");
@@ -167,6 +170,7 @@ export default function ArticleFormComponent({
       );
       setModalSuccess(true);
       reset();
+      router.push("/articles/manage");
     } catch (error) {
       if (error instanceof Error) {
         setModalMessage(
@@ -225,6 +229,14 @@ export default function ArticleFormComponent({
           placeholder="Article slug"
           className="w-full p-3 mb-4 rounded border border-neutral-700"
           {...register("slug")}
+          onChange={(e) => {
+            const formatted = e.target.value
+              .toLowerCase()
+              .trim()
+              .replace(/[^a-z0-9\s-]/g, "") // remove caracteres inválidos
+              .replace(/\s+/g, "-"); // substitui espaços por hífens
+            setValue("slug", formatted, { shouldValidate: true });
+          }}
         />
         {errors.slug && <p className="text-red-600">{errors.slug.message}</p>}
 
