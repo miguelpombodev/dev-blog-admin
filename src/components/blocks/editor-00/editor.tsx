@@ -1,19 +1,21 @@
 "use client";
 
-import { $generateHtmlFromNodes } from "@lexical/html";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import {
   InitialConfigType,
   LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { $getRoot, EditorState } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { EditorState } from "lexical";
+import { useEffect, useRef } from "react";
 
 import { editorTheme } from "@/components/editor/themes/editor-theme";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { nodes } from "./nodes";
 import { Plugins } from "./plugins";
+import { FloatingLinkContext } from "@/components/editor/context/floating-link-context";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -24,10 +26,31 @@ const editorConfig: InitialConfigType = {
   },
 };
 
+function EditorLoader({ initialHTML }: { initialHTML?: string }) {
+  const [editor] = useLexicalComposerContext();
+  const isLoadedRef = useRef(false);
+
+  useEffect(() => {
+    if (!initialHTML || isLoadedRef.current) return;
+
+    isLoadedRef.current = true;
+
+    editor.update(() => {
+      const parser = new DOMParser();
+      const dom = parser.parseFromString(initialHTML, "text/html");
+      const nodes = $generateNodesFromDOM(editor, dom);
+      const root = $getRoot();
+      root.clear();
+      root.append(...nodes);
+    });
+  }, [editor, initialHTML]);
+
+  return null;
+}
 function EditorChangeHandler({
   onChange,
 }: {
-  onChange?: (html: EditorState) => void;
+  onChange?: (html: string) => void;
 }) {
   const [editor] = useLexicalComposerContext();
 
@@ -36,7 +59,7 @@ function EditorChangeHandler({
       onChange={() => {
         editor.update(() => {
           const htmlString = $generateHtmlFromNodes(editor);
-          onChange?.(htmlString as unknown as EditorState);
+          onChange?.(htmlString);
         });
       }}
     />
@@ -45,13 +68,15 @@ function EditorChangeHandler({
 
 export function Editor({
   editorState,
+  initialHTML,
   onChange,
 }: {
   editorState?: EditorState;
-  onChange?: (html: EditorState) => void;
+  initialHTML?: string;
+  onChange?: (html: string) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-background shadow flex flex-1">
+    <div className="m-h-4 overflow-hidden rounded-lg border bg-background shadow flex flex-1">
       <LexicalComposer
         initialConfig={{
           ...editorConfig,
@@ -59,8 +84,11 @@ export function Editor({
         }}
       >
         <TooltipProvider>
-          <Plugins />
-          <EditorChangeHandler onChange={onChange} />
+          <FloatingLinkContext>
+            <Plugins />
+            <EditorChangeHandler onChange={onChange} />
+            <EditorLoader initialHTML={initialHTML} />
+          </FloatingLinkContext>
         </TooltipProvider>
       </LexicalComposer>
     </div>

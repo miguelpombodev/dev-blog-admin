@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  Dialog,
 } from "@/components/ui/dialog";
 import React from "react";
 
@@ -23,11 +23,11 @@ export default function Modal({
 }: ModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="md:max-w-[85vw]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          {children}
         </DialogHeader>
+        {children}
       </DialogContent>
     </Dialog>
   );

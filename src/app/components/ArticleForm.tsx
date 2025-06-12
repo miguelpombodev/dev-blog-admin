@@ -1,35 +1,111 @@
-import { getTags } from "@/actions/article.actions";
-import { createArticle } from "@/actions/createArticle";
+import { getArticleBySlug, getTags } from "@/actions/article.actions";
+import {
+  saveArticle,
+  updateArticle,
+  updateArticleAvatar,
+} from "@/actions/createArticle";
 import { Editor } from "@/components/blocks/editor-00/editor";
-import { ITag } from "@/interfaces/http/articles.interface";
+import { IArticle, ITag } from "@/interfaces/http/articles.interface";
 import { createArticleSchema } from "@/schemas/article.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EditorState } from "lexical";
-import { useEffect, useState } from "react";
+import { $getRoot, createEditor, EditorState } from "lexical";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import ResultModalComponent from "./ResultModal";
 import { X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
+import { nodes } from "@/components/blocks/editor-00/nodes";
+import debounce from "lodash.debounce";
 
 type FormData = z.infer<typeof createArticleSchema>;
 
-export default function ArticleFormComponent() {
+interface Props {
+  editMode?: boolean;
+  articleId?: string;
+}
+
+export default function ArticleFormComponent({
+  editMode = false,
+  articleId,
+}: Props) {
   const [availableTags, setAvailableTags] = useState<ITag[]>([]);
+  const [oldArticle, setOldArticle] = useState<IArticle>();
   const [currentValue, setCurrentValue] = useState("");
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalSuccess, setModalSuccess] = useState(false);
+  const [initialEditorState, setInitialEditorState] = useState<
+    EditorState | undefined
+  >(undefined);
 
   const {
     handleSubmit,
     register,
     setValue,
     reset,
+    watch,
+    getValues,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(createArticleSchema),
+    defaultValues: {
+      _editMode: editMode,
+    },
   });
+
+  const isPublished = watch("isPublished");
+
+  useEffect(() => {
+    setValue("_editMode", editMode);
+  }, [editMode, setValue]);
+
+  useEffect(() => {
+    const loadFormData = async () => {
+      const tags = await getTags();
+      setAvailableTags(tags);
+
+      if (editMode && articleId) {
+        const article = await getArticleBySlug(articleId);
+        setOldArticle(article);
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(article.content, "text/html");
+
+        const tempEditor = createEditor({
+          namespace: "temp-editor",
+          nodes,
+          onError: (error) => {
+            throw error;
+          },
+        });
+
+        tempEditor.update(() => {
+          const nodesFromDom = $generateNodesFromDOM(tempEditor, dom);
+          const root = $getRoot();
+          root.clear();
+          root.append(...nodesFromDom);
+
+          const html = $generateHtmlFromNodes(tempEditor, null);
+          setValue("content", html, { shouldValidate: true });
+
+          const newEditorState = tempEditor.getEditorState();
+          setInitialEditorState(newEditorState);
+        });
+
+        setValue("title", article.title);
+        setValue("briefDescription", article.briefDescription);
+        setValue("slug", article.slug);
+        setValue("tags", article.tags);
+        setSelectedTags(article.tags);
+        setValue("isPublished", article.isPublished);
+      }
+    };
+
+    loadFormData();
+  }, [editMode, articleId, setValue]);
 
   useEffect(() => {
     const getAllTags = async (): Promise<void> => {
@@ -59,23 +135,54 @@ export default function ArticleFormComponent() {
     setCurrentValue("");
   };
 
+  const debouncedSetContent = useMemo(
+    () =>
+      debounce((html: string) => {
+        setValue("content", html, { shouldValidate: true });
+      }, 500),
+    [setValue]
+  );
+
   async function componentOnSubmit(data: FormData) {
     try {
-      const file = data.articleImageSrc.item(0);
+      if (editMode) {
+        console.log("data", data);
+        await updateArticle(oldArticle!._id, data);
+      } else {
+        const file = data.articleImageSrc?.item(0);
 
-      if (!file) {
-        console.error("There's something wrong with article file");
-        return;
+        if (!file) {
+          console.error("There's something wrong with article file");
+          return;
+        }
+
+        await saveArticle(data);
+        await updateArticleAvatar(file, data.slug);
       }
 
-      await createArticle(data, file);
-      setModalMessage("Article created successfully!");
+      setModalMessage(
+        editMode
+          ? "Article updated successfully!"
+          : "Article created successfully!"
+      );
       setModalSuccess(true);
       reset();
     } catch (error) {
       if (error instanceof Error) {
-        setModalMessage("An error occurred while creating the article.");
+        setModalMessage(
+          editMode
+            ? "An error occurred while updating the article."
+            : "An error occurred while creating the article."
+        );
         setModalSuccess(false);
+      } else {
+        setModalMessage(
+          editMode
+            ? "An error occurred while updating the article."
+            : "An error occurred while creating the article."
+        );
+        setModalSuccess(false);
+        setModalOpen(true);
       }
     } finally {
       setModalOpen(true);
@@ -85,6 +192,19 @@ export default function ArticleFormComponent() {
   return (
     <>
       <form onSubmit={handleSubmit(componentOnSubmit)}>
+        {editMode && (
+          <div className="flex items-center space-x-2 py-5">
+            <Switch
+              id="publish-article"
+              className="cursor-pointer"
+              checked={isPublished}
+              onCheckedChange={(checked) => {
+                setValue("isPublished", checked, { shouldValidate: true });
+              }}
+            />
+            <Label htmlFor="publish-article">Article Published</Label>
+          </div>
+        )}
         <input
           placeholder="Article title"
           className="w-full p-3 mb-4 rounded border border-neutral-700"
@@ -108,22 +228,24 @@ export default function ArticleFormComponent() {
         />
         {errors.slug && <p className="text-red-600">{errors.slug.message}</p>}
 
-        <input
-          type="file"
-          className="w-full p-3 mb-4 rounded border border-neutral-700"
-          {...register("articleImageSrc", {
-            required: true,
-          })}
-        />
-        {errors.articleImageSrc && (
-          <p className="text-red-600">{errors.articleImageSrc.message}</p>
+        {!editMode && (
+          <>
+            <input
+              type="file"
+              className="w-full p-3 mb-4 rounded border border-neutral-700"
+              {...register("articleImageSrc")}
+            />
+            {errors.articleImageSrc && (
+              <p className="text-red-600">{errors.articleImageSrc.message}</p>
+            )}
+          </>
         )}
 
-        <div className="mt-6">
+        <div className="mt-6 flex">
           <Editor
-            onChange={(html) =>
-              setValue("content", html as EditorState, { shouldValidate: true })
-            }
+            initialHTML={editMode ? getValues("content") : ""}
+            editorState={initialEditorState}
+            onChange={(html) => debouncedSetContent(html)}
           />
           {errors.content && (
             <p className="text-red-600">{errors.content.message}</p>
@@ -171,10 +293,10 @@ export default function ArticleFormComponent() {
         </div>
 
         <button
-          className="mt-6 bg-secondary text-white px-6 py-2 rounded font-semibold hover:opacity-90"
+          className="mt-6 cursor-pointer bg-secondary text-white px-6 py-2 rounded font-semibold hover:opacity-90"
           type="submit"
         >
-          Publish
+          Save
         </button>
       </form>
       <ResultModalComponent

@@ -63,7 +63,6 @@ export function TagFormComponent({
             placeholder="Tag Title"
             className="w-2/3 h-15 p-3 mb-4 rounded border border-neutral-700"
             value={tagTitle && tagTitle}
-            readOnly
             {...register("title")}
           />
           {errors.title && (

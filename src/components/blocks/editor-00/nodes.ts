@@ -9,6 +9,7 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { ImageNode } from "@/components/editor/nodes/image-node";
+import { LinkNode, AutoLinkNode } from "@lexical/link";
 
 export const nodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement> =
   [
@@ -21,4 +22,6 @@ export const nodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement> =
     CodeNode,
     CodeHighlightNode,
     ImageNode,
+    LinkNode,
+    AutoLinkNode,
   ];

@@ -115,18 +115,18 @@ export default function ManagerPage() {
                 <Spinner />
               ) : (
                 <>
-                  {articleInformations.articlesCategoriesCount && (
+                  {!articleInformations.articlesCategoriesCount && (
                     <span className="flex justify-center items-center w-[60%] h-[16%] bg-white z-1 rounded-[10] absolute top-[42%]">
                       No items to be displayed
                     </span>
                   )}
-                  {!articleInformations.articlesCategoriesCount ? (
+                  {articleInformations.articlesCategoriesCount ? (
                     <PieChart
                       title="Articles"
                       nameKey="name"
                       dataKey="count"
                       data={articleInformations.articlesCategoriesCount}
-                      totalCount={articleInformations.count}
+                      totalCount={articleInformations.articles.length}
                       isBlurred={false}
                     />
                   ) : (
@@ -153,13 +153,12 @@ export default function ManagerPage() {
               </Card>
             </span>
           ) : (
-            <span>
+            <span className={`${articles && "flex flex-col gap-5"}`}>
               {!articles.length && (
                 <Card>
                   <CardContent>No cards to be shown</CardContent>
                 </Card>
               )}
-
               {articles.map((article) => (
                 <ArticleCardComponent key={article._id} article={article} />
               ))}

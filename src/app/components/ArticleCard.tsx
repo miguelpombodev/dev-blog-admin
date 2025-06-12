@@ -4,11 +4,11 @@ import { EllipsisVertical } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Modal from "./Modal";
 import ResultModalComponent from "./ResultModal";
-import { TagFormComponent } from "./TagForm";
 import { deleteTag } from "@/actions/tag.actions";
 import { IArticleCardProps } from "@/interfaces/components/articleCard.interface";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import ArticleFormComponent from "./ArticleForm";
 
 export default function ArticleCardComponent({
   article,
@@ -21,6 +21,7 @@ export default function ArticleCardComponent({
   const [resultModalOpen, setResultModalOpen] = useState(false);
   const [resultModalMessage, setResultModalMessage] = useState("");
   const [resultModalSuccess, setResultModalSuccess] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -60,13 +61,24 @@ export default function ArticleCardComponent({
   return (
     <Card key={article._id} className="relative flex gap-10 justify-between">
       <CardContent className="flex justify-between items-center">
-        <div className="flex">
-          <Image
-            src={article.articleImageSrc}
-            alt={article.title}
-            width={50}
-            height={50}
-          />
+        <div className="flex gap-5">
+          <div
+            className="relative group w-auto h-auto cursor-pointer"
+            onClick={() => setImageModalOpen(true)}
+          >
+            <Image
+              src={article.articleImageSrc}
+              alt={article.title}
+              width={100}
+              height={50}
+              className="rounded-[10px] object-cover w-full h-full"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-[10px] opacity-0 group-hover:opacity-40 flex items-center justify-center transition-opacity duration-300 text-center">
+              <span className="text-white text-sm font-semibold">
+                Update Avatar Image
+              </span>
+            </div>
+          </div>
           <span className="flex flex-col gap-1">
             <h2 className="text-xl font-bold">{article.title}</h2>
             <p>
@@ -110,7 +122,11 @@ export default function ArticleCardComponent({
           isOpen={editModalOpen}
           onClose={() => setEditModalOpen(false)}
         >
-          <TagFormComponent editMode tagTitle={article.title} />
+          <ArticleFormComponent
+            editMode
+            key={article.title}
+            articleId={article.slug}
+          />
         </Modal>
         <Modal
           title="Delete Tag - Teste"
@@ -118,7 +134,7 @@ export default function ArticleCardComponent({
           onClose={() => setDeleteModalOpen(false)}
         >
           <h1>
-            ARE YOU SURE YOU WANT TO DELETE THE TAG{" "}
+            ARE YOU SURE YOU WANT TO DELETE THE ARTICLE{" "}
             <strong>{article.title}</strong>?
           </h1>
           <button
@@ -140,6 +156,43 @@ export default function ArticleCardComponent({
           isSuccess={resultModalSuccess}
           message={resultModalMessage}
         />
+        <Modal
+          title="Update Article Image"
+          isOpen={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const fileInput = e.currentTarget.elements.namedItem(
+                "image"
+              ) as HTMLInputElement;
+              const file = fileInput.files?.[0];
+              if (file) {
+                console.log("Selected image:", file);
+              }
+              setImageModalOpen(false);
+            }}
+            className="flex flex-col gap-4"
+          >
+            <input type="file" name="image" accept="image/*" required />
+            <div className="flex gap-2 justify-end">
+              <button
+                type="submit"
+                className="bg-primary text-white px-4 py-2 rounded hover:opacity-90"
+              >
+                Upload
+              </button>
+              <button
+                type="button"
+                className="bg-secondary text-white px-4 py-2 rounded hover:opacity-90"
+                onClick={() => setImageModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
       </CardContent>
     </Card>
   );

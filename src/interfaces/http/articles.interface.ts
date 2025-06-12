@@ -11,6 +11,7 @@ export interface IArticle {
   slug: string;
   content: string;
   tags: ITag[];
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
   __v: number;

@@ -29,9 +29,15 @@ import { useUpdateToolbarHandler } from "@/components/editor/editor-hooks/use-up
 
 function getCodeLanguageOptions(): [string, string][] {
   const options: [string, string][] = [];
+  const languages = { "C#": "C#" };
+
+  const NEW_CODE_LANGUAGE_FRIENDLY_NAME_MAP = {
+    ...languages,
+    ...CODE_LANGUAGE_FRIENDLY_NAME_MAP,
+  };
 
   for (const [lang, friendlyName] of Object.entries(
-    CODE_LANGUAGE_FRIENDLY_NAME_MAP
+    NEW_CODE_LANGUAGE_FRIENDLY_NAME_MAP
   )) {
     options.push([lang, friendlyName]);
   }
