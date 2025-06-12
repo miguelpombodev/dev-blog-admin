@@ -27,7 +27,7 @@ export async function getAllArticle() {
   const client = new FetchApiClient();
   const result = await client.Get<IArticle[]>(
     "devblog",
-    "article?sort=desc",
+    "article?sort=desc&allArticles=true",
     {}
   );
 

@@ -2,6 +2,7 @@
 
 import FetchApiClient from "@/lib/fetchClient";
 import { createArticleSchema } from "@/schemas/article.schema";
+import { TrimObjectValues } from "@/utils/string.util";
 import { z } from "zod";
 
 type CreateArticleFormData = z.infer<typeof createArticleSchema>;
@@ -18,7 +19,9 @@ export async function saveArticle(
 ): Promise<string> {
   const { briefDescription, content, slug, tags, title } = data;
   const fetch = new FetchApiClient();
-  const json = JSON.stringify({ briefDescription, content, slug, tags, title });
+  const json = JSON.stringify(
+    TrimObjectValues({ briefDescription, content, slug, tags, title })
+  );
 
   const result = await fetch.Post<string>("devblog", "article", {
     body: json,
@@ -29,7 +32,7 @@ export async function saveArticle(
 
 export async function updateArticle(id: string, data: CreateArticleFormData) {
   const fetch = new FetchApiClient();
-  const json = JSON.stringify(data);
+  const json = JSON.stringify(TrimObjectValues(data));
 
   const result = await fetch.Put<string>("devblog", `article/${id}`, {
     body: json,
