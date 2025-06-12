@@ -233,8 +233,8 @@ export default function ArticleFormComponent({
             const formatted = e.target.value
               .toLowerCase()
               .trim()
-              .replace(/[^a-z0-9\s-]/g, "") // remove caracteres inválidos
-              .replace(/\s+/g, "-"); // substitui espaços por hífens
+              .replace(/[^a-z0-9\s-]/g, "")
+              .replace(/\s+/g, "-");
             setValue("slug", formatted, { shouldValidate: true });
           }}
         />
