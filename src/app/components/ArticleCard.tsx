@@ -9,6 +9,7 @@ import { IArticleCardProps } from "@/interfaces/components/articleCard.interface
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import ArticleFormComponent from "./ArticleForm";
+import { updateArticleAvatar } from "@/actions/createArticle";
 
 export default function ArticleCardComponent({
   article,
@@ -162,14 +163,14 @@ export default function ArticleCardComponent({
           onClose={() => setImageModalOpen(false)}
         >
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               const fileInput = e.currentTarget.elements.namedItem(
                 "image"
               ) as HTMLInputElement;
               const file = fileInput.files?.[0];
               if (file) {
-                console.log("Selected image:", file);
+                await updateArticleAvatar(file, article.slug);
               }
               setImageModalOpen(false);
             }}
