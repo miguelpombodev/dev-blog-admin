@@ -172,6 +172,7 @@ export default function ArticleCardComponent({
               if (file) {
                 await updateArticleAvatar(file, article.slug);
               }
+              setResultModalMessage("Article updated successfully!");
               setImageModalOpen(false);
             }}
             className="flex flex-col gap-4"
